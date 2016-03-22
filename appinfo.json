@@ -29,6 +29,11 @@
                 "type": "font"
             },
             {
+                "file": "images/cross.png",
+                "name": "IMAGES_CROSS_PNG",
+                "type": "png"
+            },
+            {
                 "file": "images/CathoicDailyTiiny.png",
                 "menuIcon": true,
                 "name": "IMAGES_CATHOICDAILYTIINY_PNG",
