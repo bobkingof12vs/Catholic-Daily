@@ -1,43 +1,90 @@
 var UI = require('ui');
-var Vibe = require('ui/vibe');
-var ajax = require('ajax');
-var Vector2 = require('vector2');
-/*
-prayers = [
-  {Title: 'Apostle\'s Creed', text: 'I believe in God, the Father Almighty, Creator of Heaven and earth; '+
-    'and in Jesus Christ, His only Son Our Lord, '+
-    'Who was conceived by the Holy Spirit, born of the Virgin Mary, suffered under Pontius Pilate, was crucified, died, and was buried. '+
-    'He descended into Hell; the third day He rose again from the dead; '+
-    'He ascended into Heaven, and sitteth at the right hand of God, the Father almighty; from thence He shall come to judge the living and the dead.'+
-    'I believe in the Holy Spirit, the holy Catholic Church, the communion of saints, the forgiveness of sins, the resurrection of the body and life everlasting. Amen'},
-  {Title:'Our Father', Text: 'Our Father, Who art in heaven, '+
-   'Hallowed be Thy Name. Thy Kingdom come. '+
-   'Thy Will be done, on earth as it is in Heaven. Give us this day our daily bread. '+
-   'And forgive us our trespasses, as we forgive those who trespass against us.'+
-   'And lead us not into temptation, but deliver us from evil. Amen.'},
-  {Title: 'Hail Mary', text:'Hail Mary, '+
-   'Full of Grace, The Lord is with thee. Blessed art thou among women, '+
-   'and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, '+
-   'pray for us sinners now, and at the hour of death. Amen.'},
-  {Title: 'Glory Be', text:'Glory be to the Father, and to the Son and to the Holy Spirit. As it was in the beginning, is now and will be forever. Amen'},
-  {Title: 'Oh My Jesus', text:'Oh my Jesus, forgive us our sins, save us from the fires of Hell and lead all souls to Heaven'+
-   ', especially those in most need of thine mercy.'},
-  {Title: 'Hail Holy Queen', text:'Hail Holy Queen, Mother of Mercy. Our life, our Sweetness and our Hope. To thee do we cry, poor banished children of Eve,'+
-   'To thee do we send up our sighs, mourning and weeping in this valley of tears. Turn then most gracious advocate, thing eyes of mercy towards us. '+
-   'And after this our exile, show unto us, the blessed fruit of thy womb, Jesus. Oh Clemen, oh Loving, oh Sweet Virgin Mary. Pray for us, '+
-   'oh most holy Mother of God. That we may be made worthy, of the promises of christ. Amen'},
-  {Title: 'Oh Precious Blood and Water...', text:'Oh precious blood and water, which gushed forth from the heart of jesus as a font of mercy for us, I trust in you.'},
-  {Title: 'Eternal Father...', text:'Eternal Father, I offer you the body, blood, soul and divinity of your dearly beloved son, our lord Jesus Christ\n'+
-   'In attonement for our sins, and those of the whole World.'},
-  {Title: 'For the sake...', text:'For the sake of his sorrowful passion\n'+
-   'Have mercy on us and on the whole World.'},
-  {Title: 'Holy God...', text:'Holy God, Holy Mighty One, Holy Immortal One. Have mercy on us and on the whole World'},
-  {Title: 'Jesus, I trust in you', text:'Jesus, I trust in you'}
-];
-*/
+
+function getPrayer(num, insert){
+  switch (num) {
+    case 0:  return {Title: 'Apostle\'s Creed', text: [
+      'I believe in God, the Father Almighty, Creator of Heaven and earth;',
+      'and in Jesus Christ, His only Son Our Lord, Who was conceived by the Holy',
+      'Spirit, born of the Virgin Mary, suffered under Pontius Pilate, was',
+      'crucified, died, and was buried. He descended into Hell; the third',
+      'day He rose again from the dead; He ascended into Heaven, and is seated',
+      'at the right hand of God, the Father almighty; from thence He shall come',
+      'to judge the living and the dead. I believe in the Holy Spirit, the holy',
+      'Catholic Church, the communion of saints, the forgiveness of sins, the',
+      'resurrection of the body and life everlasting. Amen'
+    ]};
+    case 1:  return {Title:'Our Father', text: [
+      'Our Father, Who art in heaven, Hallowed be Thy Name. Thy Kingdom',
+      'come. Thy Will be done, on earth as it is in Heaven. Give us this day our daily',
+      'bread. And forgive us our trespasses, as we forgive those who trespass',
+      'against us. And lead us not into temptation, but deliver us from evil. Amen.'
+      ]};
+    case 2:  return {Title: 'Hail Mary', text: [
+      'Hail Mary, Full of Grace, The Lord is with thee. Blessed art thou among',
+      'women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, ',
+      'pray for us sinners now, and at the hour of death. Amen.'
+    ]};
+    case 3:  return {Title: 'Glory Be', text:[
+      'Glory be to the Father, and to the Son and to the Holy Spirit.',
+      'As it was in the beginning, is now and will be forever. Amen'
+    ]};
+    case 4:  return {Title: 'Oh My Jesus', text:[
+      'Oh my Jesus, forgive us our sins, save us from the fires of Hell and lead all',
+      'souls to Heaven, especially those in most need of thine mercy.'
+    ]};
+    case 5:  return {Title: 'Hail Holy Queen', text:[
+      'Hail Holy Queen, Mother of Mercy. Our life, our Sweetness and our Hope. To ',
+      'thee do we cry, poor banished children of Eve, To thee do we send up our ',
+      'sighs, mourning and weeping in this valley of tears. Turn then most gracious ',
+      'advocate, thine eyes of mercy towards us. And after this our exile, show unto us, the ',
+      'blessed fruit of thy womb, Jesus. ',
+      'Oh Clemen, oh Loving, oh Sweet Virgin Mary. ',
+      'Pray for us, oh most holy Mother of God. That we may be made worthy, of the ',
+      'promises of christ. Amen'
+    ]};
+    case 6:  return {Title: 'Oh Precious Blood and Water...', text:[
+      'Oh precious blood and water, which gushed forth from the heart of jesus as a',
+      'font of mercy for us, I trust in you.'
+    ]};
+    case 7:  return {Title: 'Eternal Father...', text:[
+      'Eternal Father, I offer you the body, blood, soul and divinity of your dearly beloved',
+      'son, our lord Jesus Christ In attonement for our sins, and those of the whole World.'
+    ]};
+    case 8:  return {Title: 'For the sake...', text:[
+      'For the sake of his sorrowful passion, have mercy on us and on the whole World.'
+    ]};
+    case 9:  return {Title: 'Holy God...', text:[
+      'Holy God, Holy Mighty One, Holy Immortal One.',
+      'Have mercy on us and on the whole World'
+    ]};
+    case 10: return {Title: 'Jesus, I trust in you', text:[
+      'Jesus, I trust in you'
+    ]};
+    case 12: return {Title: 'Closing Prayer', text: 
+      getPrayer(3).text.concat(getPrayer(4).text, getPrayer(5).text)
+    };
+    case 13: return {Title: 'Sign of the Cross', text: [
+      'In the name of The Father, and of The Son, and of the Holy Spirit. Amen'
+    ]};
+    case 14: return {Title: 'Opening Prayer', text: 
+      getPrayer(6).text.concat(getPrayer(6).text, getPrayer(6).text)
+    };  
+    case 15: return {Title: 'Closing Prayer', text: 
+      getPrayer(9).text.concat(getPrayer(9).text, getPrayer(9).text, getPrayer(10).text, getPrayer(10).text, getPrayer(10).text, getPrayer(13).text)
+    };  
+      
+    //this covers all the mysteries easily
+    case 100: case 101: case 102: case 103: case 104:
+      return {Title: 'Mystery', size: 1100, text: 
+        ['\n'+insert].concat(getPrayer(3).text, getPrayer(4).text, ['\n'+insert], getPrayer(1).text)
+      };
+  }
+}
+
 var readings = function(){
   
   var _this = this;
+  this.ajax = require('ajax');
   
   var _days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   this.readingsGetDateMenu = function(){
@@ -71,7 +118,7 @@ var readings = function(){
     _lastDate = date;
     
     console.log('http://universalis.com/Europe.England.Westminster/'+date+'/jsonpmass.js');
-    ajax(
+    _this.ajax(
       {
         url: 'http://universalis.com/Europe.England.Westminster/'+date+'/jsonpmass.js'
       },
@@ -81,8 +128,12 @@ var readings = function(){
         var items = [];
         items.push({title: 'Reading 1', subtitle: data.Mass_R1.source, data: data.Mass_R1});
         items.push({title: 'Psalm', subtitle: data.Mass_Ps.source, data: data.Mass_Ps});
-        if(data.Mass_R2 !== undefined)
-          items.push({title: 'Reading 2', subtitle: data.Mass_R2.source, data: data.Mass_R2});
+        for(var i = 2; i < 10; i++){
+          if(data['Mass_R'+i] !== undefined)
+            items.push({title: 'Reading '+i, subtitle: data['Mass_R'+i].source, data: data['Mass_R'+i]});
+          if(data['Mass_Ps'+i] !== undefined)
+            items.push({title: 'Psalm '+i, subtitle: data['Mass_Ps'+i].source, data: data['Mass_Ps'+i]}); 
+        }
         items.push({title: 'Gospel', subtitle: data.Mass_G.source, data: data.Mass_G});
         data.copyright.source = 'Universalis';
         items.push({title: 'Copyright', subtitle: 'for the readings', data: data.copyright});
@@ -167,165 +218,183 @@ var readings = function(){
     
     card.show();
   };
-}
+};
 
 var rosary = function(type){
   var _this = this;
   
-  this.type = type;
-  
+  this.Vibe = require('ui/vibe');
+  this.Vector2 = require('vector2');
   this.window = new UI.Window({fullscreen: true});
-  console.log(this.window);
+  
+  this.type = type;
+
   this.beads = [
-    null,null,-1,0,1,2,3,4,
+    null,null,null,null,
+    0,1,2,3,4,
     5,11,11,11,11,11,11,11,11,11,11,
-    6,11,11,11,11,11,11,11,11,11,11,
-    7,11,11,11,11,11,11,11,11,11,11,
-    8,11,11,11,11,11,11,11,11,11,11,
-    9,11,11,11,11,11,11,11,11,11,11,
-    10,null,null
+//     6,11,11,11,11,11,11,11,11,11,11,
+//     7,11,11,11,11,11,11,11,11,11,11,
+//     8,11,11,11,11,11,11,11,11,11,11,
+//     9,11,11,11,11,11,11,11,11,11,11,
+    10,
+    null,null,null,null
   ];
   
-  this.padding = 3;
-  this.elements = [];
-  this.beadElement = function(top, y, radius){
+  this.beadElement = function(y, radius){
     console.log('adding bead: '+radius);
-    var halfHeight = (radius * 2) + _this.padding;
     var cir = new UI.Circle({
-        position: new Vector2(72, 83 + y),
+        position: new _this.Vector2(20, 83 + y),
         radius: radius
       });
     cir.yoffset = 0;
-    cir.halfHeight = halfHeight;
-    cir.radius = radius;
-    if(top)
-      _this.elements.push(cir);
-    else
-      _this.elements.unshift(cir);
     
-    if(radius > 5)
-      _this.window.insert(1, _this.elements[top ? (_this.elements.length - 1) : 0]);
+    return [cir];
   };
   
-  this.crossElement = function(top, y, piece){ 
-    console.log('adding cross: ' + piece);
-    var rect = {};
-    if(piece === 0){
-      rect = new UI.Rect({
-        position: new Vector2(72 - 4, 84 - 23 + y),
-        size: new Vector2(8, 68)
-      });
-      rect.yoffset = 23;
-    }
-    else{
-      rect = new UI.Rect({
-        position: new Vector2(72 - 24, 84 - 2 - 50 + y),
-        size: new Vector2(48, 8)
-      });
-      rect.yoffset = 52;
-    }
-    
-    if(top)
-      _this.elements.push(rect);
-    else
-      _this.elements.unshift(rect);
-    
-    _this.window.insert(1, _this.elements[top ? (_this.elements.length - 1) : 0]);
+  this.crossElement = function(y){ 
+    console.log('adding cross');
+    var rects = [
+      new UI.Rect({
+        position: new _this.Vector2(20 - 3, 84 - 23 + y),
+        size: new _this.Vector2(8, 44)
+      }),
+      new UI.Rect({
+        position: new _this.Vector2(20 - 15, 84 - 10 + y),
+        size: new _this.Vector2(30, 8)
+      })
+    ];
+    rects[0].yoffset = 23;
+    rects[1].yoffset = 10;
+    return rects;
   };
   
-  this.bead = 2;
+  this.bead = 4;
   this.lastTime = new Date().getTime();
   this.pray = function(inc){
+    var i = 0;//to get cloud pebble to stop warning me :|
     
-    if(new Date().getTime() - this.lastTime < 400)
+    if(new Date().getTime() - this.lastTime < 500)
       return;
     this.lastTime = new Date().getTime();
     
-    var top = (inc == 1);
+    var pushBead = _this.bead + (4 * inc);
     
-    var pushBead = _this.bead + (3 * inc);
-    
-    console.log('rosary inc: ' + inc, _this.beads[_this.bead + inc], _this.beads[pushBead]);
-    
+    var newBead = [];
     if(_this.beads[_this.bead + inc] === null || _this.beads[_this.bead + inc] === -1)
       return;
     if(_this.beads[pushBead] === null)
-      _this.beadElement(top, inc * -150, 3);
+      console.log('adding nothing');
     else if([0,-1].indexOf(_this.beads[pushBead]) != -1)
-      _this.crossElement(top, inc * -150, _this.beads[pushBead]);
+      newBead = _this.crossElement(inc * -150, _this.beads[pushBead]);
     else if([2,3,4,11].indexOf(_this.beads[pushBead]) != -1)
-      _this.beadElement(top, inc * -150, 10);
+      newBead = _this.beadElement(inc * -150, 8);
     else if([1,5,6,7,8,9,10].indexOf(_this.beads[pushBead]) != -1)
-      _this.beadElement(top, inc * -150, 18);
+      newBead = _this.beadElement(inc * -150, 13);
     else
-      console.warn('case not found');
+      return console.warn('case not found');
     
     _this.bead += inc;
     
     var t = _this.type.text[_this.beads[_this.bead]];
-    _this.text.text(_this.beads[_this.bead]+':'+[0,1,2,3,4].indexOf(t) != -1 ? _this.type.mysteries[t] : t);
+    _this.curPrayer = [];
+    if([100,101,102,103,104].indexOf(t) != -1)
+      _this.curPrayer = getPrayer(t, _this.type.mysteries[t - 100]);
+    else
+      _this.curPrayer = getPrayer(t);
+
+    _this.curChunk = 0;
+    _this.moveText(0);
     
     if([5,6,7,8,9].indexOf(_this.beads[_this.bead]) != -1)
-      Vibe.vibrate('short');
+      _this.Vibe.vibrate('short');
     else if(_this.beads[_this.bead] == 10)
-      Vibe.vibrate('long');
+      _this.Vibe.vibrate('long');
     
-    for (var asdf in _this.elements[0]. _queue)
-      console.log(asdf);
+    for(i = 0; i < newBead.length; i++)
+      _this.window.add(newBead[i]);
     
-    _this.window.remove(top ? _this.elements.shift() : _this.elements.pop());
-    
-    var i = _this.elements.length;
-    console.log(i);
-    
-    while(i--){
-      var pos = _this.elements[i].position();
-      pos.y =  84 + ((3 - i) * 50) - _this.elements[i].yoffset;
-      console.log(i+', '+ pos.y+', '+_this.elements[i].radius);
-      _this.elements[i].animate('position', pos, 400);
+    var removeBead = [];
+    if(inc == 1){
+      removeBead = _this.elements.shift();
+      _this.elements.push(newBead);
+    }
+    else{
+      removeBead = _this.elements.pop();
+      _this.elements.unshift(newBead);
+    }
+    for(i = 0; i < removeBead.length; i++)
+      _this.window.remove(removeBead[i]);
+
+    for(i = 0; i < _this.elements.length; i++){
+      console.log(i);
+      for(var j = 0; j < _this.elements[i].length; j++){
+        var pos = _this.elements[i][j].position();
+        pos.y =  84 + ((3 - i) * 50) - _this.elements[i][j].yoffset;
+        _this.elements[i][j].animate('position', pos, 400);
+      }
     }
   };
   
-  this.elements = [];
-  this.beadElement(true, 150, 0);
-  this.beadElement(true, 100, 0);
-  this.crossElement(true, 50, -1);
-  this.crossElement(true, 0, 0);
-  this.beadElement(true, -50, 18);
-  this.beadElement(true, -100, 10);
-  this.beadElement(true, -150, 10);
-  this.bead = 3;
-
-  this.rect = new UI.Rect({
-    position: new Vector2(0, 147),
-    size: new Vector2(144,20),
-    backgroundColor: 'white'
-  });
-  this.window.add(_this.rect);
+  this.moveText = function(upDown){
+    if(_this.curChunk + upDown >= 0 && _this.curChunk + upDown < _this.curPrayer.text.length)
+      _this.curChunk += upDown;
+    
+    _this.text.text(_this.curPrayer.text[_this.curChunk]);
+  };
+  
+  this.elements = [
+    [], [], [],
+    this.crossElement(0),
+    this.beadElement(-50,  13),
+    this.beadElement(-100, 8),
+    this.beadElement(-150, 8)
+  ];
+  
+  for(var i = 0; i < this.elements.length; i++)
+    for(var j = 0; j < this.elements[i].length; j++)
+      this.window.add(this.elements[i][j]);
+  
+  this.bead = 4;
 
   this.text = new UI.Text({
-    position: new Vector2(0, 140),
-    size: new Vector2(144,20),
+    position: new _this.Vector2(40, 4),
+    size: new _this.Vector2(100, 160),
     textAlign: 'center',
+    textOverflow: 'wrap',
     color: 'black',
-    text: _this.type.text[0]
+    backgroundColor: 'white',
+    text: '',
   });
+  
+  this.curPrayer = getPrayer(_this.type.text[0]);
+  this.curChunk = 0;
+  this.moveText(0);
+  
   this.window.add(_this.text);
+  
+  this.window.add(new UI.Circle({
+    position: new _this.Vector2(39, 84),
+    radius: 4,
+    borderColor : 'black'
+  }));
 
-  this.window.on('click','up',function(){_this.pray(1);});
-  this.window.on('click','down',function(){_this.pray(-1);});
+  this.window.on('click','select',function(){_this.pray(1);});
+  this.window.on('longClick','select',function(){_this.pray(-1);});
+  this.window.on('click','up',function(){_this.moveText(-1);});
+  this.window.on('click','down',function(){_this.moveText(1);});
   
   this.window.show();
 };
 
 var rosaryMenu = function(){
-  var typicalRosary = ['Apostle\'s Creed','Our Father','Hail Mary','Hail Mary','Hail Mary',0,1,2,3,4,'Hail Holy Queen','Hail Mary'];
+  var typicalRosary = [0,1,2,2,2,100,101,102,103,104,12,2];
   var types = [
-    {title: 'Divine Mercy', subtitle: 'Daily Chaplet', text: ['Sign of the Cross','Openeing Prayer','Our Father','Hail Mary','Apostle\'s Creed','Eternal Father...','Eternal Father...','Eternal Father...','Eternal Father...','Eternal Father...','Closing Prayer','For the sake...']},
-    {title: 'Joyful', subtitle: 'Monday, Saturday', text: typicalRosary, mysteries: ['The Annunciation','The Visitation','The Nativity','The Presentation','Finding of Jesus']},
-    {title: 'Sorrowful', subtitle: 'Tuesday, Friday', text: typicalRosary, mysteries: ['Agony in the Garden','The Scourging','Crowning of thorns','Carrying the Cross','The Crucifixtion']},
-    {title: 'Glorious', subtitle: 'Wednesday, Sunday', text: typicalRosary, mysteries: ['The Resurrection','The Ascension','Decent of the Spirit','The Assumption','Cronwing of Mary']},
-    {title: 'Luminous', subtitle: 'Thursday', text: typicalRosary, mysteries: ['The Baptisism','Wedding at Cana','Procloing the kingdowm','The Transifguration','Institution of the Eucharist']}
+    {title: 'Divine Mercy', subtitle: 'Daily Chaplet', text: [13,14,1,2,0,7,7,7,7,7,15,8]},
+    {title: 'Joyful', subtitle: 'Monday, Saturday', text: typicalRosary, mysteries: ['The Annunciation','The Visitation','The Nativity','The Presentation','The Finding of Jesus in the Temple']},
+    {title: 'Sorrowful', subtitle: 'Tuesday, Friday', text: typicalRosary, mysteries: ['The Agony in the Garden','The Scourging at the Pillar','The Crowning of Thorns','The Carrying the Cross','The Crucifixtion']},
+    {title: 'Glorious', subtitle: 'Wednesday, Sunday', text: typicalRosary, mysteries: ['The Resurrection','The Ascension','The Decent of the Spirit','The Assumption','The Cronwing of Mary']},
+    {title: 'Luminous', subtitle: 'Thursday', text: typicalRosary, mysteries: ['The Baptisism','The Wedding at Cana','The Procrolation of the Kingdom of Heaven','The Transifguration','the Institution of the Eucharist']}
   ];
   
   var menu = new UI.Menu();
@@ -346,8 +415,7 @@ function mainMenu(){
   menu.on('select',function(e){
     console.log(e.itemIndex);
     if(e.itemIndex === 0){
-      var r = new readings();
-      r.readingsGetDateMenu();
+      new readings().readingsGetDateMenu();
     }
     else{
       rosaryMenu();
