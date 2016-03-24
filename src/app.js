@@ -220,7 +220,7 @@ var readings = function(){
   };
 };
 
-var rosary = function(type){
+var rosary = function(type, start){
   var _this = this;
   
   this.Vibe = require('ui/vibe');
@@ -228,21 +228,33 @@ var rosary = function(type){
   this.window = new UI.Window({fullscreen: true});
   
   this.type = type;
-
+  
   this.beads = [
     null,null,null,null,
     0,1,2,3,4,
     5,11,11,11,11,11,11,11,11,11,11,
-//     6,11,11,11,11,11,11,11,11,11,11,
-//     7,11,11,11,11,11,11,11,11,11,11,
-//     8,11,11,11,11,11,11,11,11,11,11,
-//     9,11,11,11,11,11,11,11,11,11,11,
+    6,11,11,11,11,11,11,11,11,11,11,
+    7,11,11,11,11,11,11,11,11,11,11,
+    8,11,11,11,11,11,11,11,11,11,11,
+    9,11,11,11,11,11,11,11,11,11,11,
     10,
     null,null,null,null
   ];
   
+  this.getBead = function(y, pushBead){
+    if(_this.beads[pushBead] === null)
+      return [];
+    else if([0,-1].indexOf(_this.beads[pushBead]) != -1)
+      return _this.crossElement(y, _this.beads[pushBead]);
+    else if([2,3,4,11].indexOf(_this.beads[pushBead]) != -1)
+      return _this.beadElement(y, 8);
+    else if([1,5,6,7,8,9,10].indexOf(_this.beads[pushBead]) != -1)
+      return _this.beadElement(y, 13);
+    else
+      return [];
+  };
+
   this.beadElement = function(y, radius){
-    console.log('adding bead: '+radius);
     var cir = new UI.Circle({
         position: new _this.Vector2(20, 83 + y),
         radius: radius
@@ -253,7 +265,6 @@ var rosary = function(type){
   };
   
   this.crossElement = function(y){ 
-    console.log('adding cross');
     var rects = [
       new UI.Rect({
         position: new _this.Vector2(20 - 3, 84 - 23 + y),
@@ -269,31 +280,17 @@ var rosary = function(type){
     return rects;
   };
   
-  this.bead = 4;
   this.lastTime = new Date().getTime();
   this.pray = function(inc){
     var i = 0;//to get cloud pebble to stop warning me :|
     
-    if(new Date().getTime() - this.lastTime < 500)
+    var temptime = new Date().getTime();
+    if(temptime - this.lastTime < 500)
       return;
-    this.lastTime = new Date().getTime();
+    this.lastTime = temptime;
     
-    var pushBead = _this.bead + (4 * inc);
-    
-    var newBead = [];
     if(_this.beads[_this.bead + inc] === null || _this.beads[_this.bead + inc] === -1)
       return;
-    if(_this.beads[pushBead] === null)
-      console.log('adding nothing');
-    else if([0,-1].indexOf(_this.beads[pushBead]) != -1)
-      newBead = _this.crossElement(inc * -150, _this.beads[pushBead]);
-    else if([2,3,4,11].indexOf(_this.beads[pushBead]) != -1)
-      newBead = _this.beadElement(inc * -150, 8);
-    else if([1,5,6,7,8,9,10].indexOf(_this.beads[pushBead]) != -1)
-      newBead = _this.beadElement(inc * -150, 13);
-    else
-      return console.warn('case not found');
-    
     _this.bead += inc;
     
     var t = _this.type.text[_this.beads[_this.bead]];
@@ -310,7 +307,8 @@ var rosary = function(type){
       _this.Vibe.vibrate('short');
     else if(_this.beads[_this.bead] == 10)
       _this.Vibe.vibrate('long');
-    
+  
+    var newBead = _this.getBead(inc * -150, _this.bead + (4 * inc));
     for(i = 0; i < newBead.length; i++)
       _this.window.add(newBead[i]);
     
@@ -325,9 +323,8 @@ var rosary = function(type){
     }
     for(i = 0; i < removeBead.length; i++)
       _this.window.remove(removeBead[i]);
-
+    
     for(i = 0; i < _this.elements.length; i++){
-      console.log(i);
       for(var j = 0; j < _this.elements[i].length; j++){
         var pos = _this.elements[i][j].position();
         pos.y =  84 + ((3 - i) * 50) - _this.elements[i][j].yoffset;
@@ -344,18 +341,20 @@ var rosary = function(type){
   };
   
   this.elements = [
-    [], [], [],
-    this.crossElement(0),
-    this.beadElement(-50,  13),
-    this.beadElement(-100, 8),
-    this.beadElement(-150, 8)
+    _this.getBead( 150, start - 3),
+    _this.getBead( 100, start - 2),
+    _this.getBead(  50, start - 1),
+    _this.getBead(   0, start),
+    _this.getBead( -50, start + 1),
+    _this.getBead(-100, start + 2),
+    _this.getBead(-150, start + 3)
   ];
   
   for(var i = 0; i < this.elements.length; i++)
     for(var j = 0; j < this.elements[i].length; j++)
       this.window.add(this.elements[i][j]);
   
-  this.bead = 4;
+  this.bead = start;
 
   this.text = new UI.Text({
     position: new _this.Vector2(40, 4),
@@ -399,7 +398,7 @@ var rosaryMenu = function(){
   
   var menu = new UI.Menu();
   menu.items(0, types);
-  menu.on('select',function(e){new rosary(types[e.itemIndex]);});
+  menu.on('select',function(e){new rosary(types[e.itemIndex], 3);});
   menu.show();
 };
 
@@ -413,9 +412,8 @@ function mainMenu(){
   menu.items(0,items);
   
   menu.on('select',function(e){
-    console.log(e.itemIndex);
     if(e.itemIndex === 0){
-      new readings().readingsGetDateMenu();
+      var r = new readings().readingsGetDateMenu();
     }
     else{
       rosaryMenu();
