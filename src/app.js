@@ -11,36 +11,36 @@ function getPrayer(num, insert){
       'at the right hand of God, the Father almighty; from thence He shall come',
       'to judge the living and the dead. I believe in the Holy Spirit, the holy',
       'Catholic Church, the communion of saints, the forgiveness of sins, the',
-      'resurrection of the body and life everlasting. Amen'
+      'resurrection of the body and life everlasting. \nAmen'
     ]};
     case 1:  return {Title:'Our Father', text: [
-      'Our Father, Who art in heaven, Hallowed be Thy Name. Thy Kingdom',
-      'come. Thy Will be done, on earth as it is in Heaven. Give us this day our daily',
-      'bread. And forgive us our trespasses, as we forgive those who trespass',
-      'against us. And lead us not into temptation, but deliver us from evil. Amen.'
+      'Our Father, Who art in heaven, Hallowed be Thy Name. Thy Kingdom come.',
+      'Thy Will be done, on Earth as it is in Heaven. Give us this day our daily bread. ',
+      'And forgive us our trespasses, as we forgive those who trespass against us.',
+      'And lead us not into temptation, but deliver us from evil. \nAmen.'
       ]};
     case 2:  return {Title: 'Hail Mary', text: [
-      'Hail Mary, Full of Grace, The Lord is with thee. Blessed art thou among',
-      'women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, ',
-      'pray for us sinners now, and at the hour of death. Amen.'
+      'Hail Mary, full of Grace, The Lord is with thee. Blessed art thou among women,',
+      'and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, ',
+      'pray for us sinners now, and at the hour of death. \nAmen.'
     ]};
     case 3:  return {Title: 'Glory Be', text:[
       'Glory be to the Father, and to the Son and to the Holy Spirit.',
-      'As it was in the beginning, is now and will be forever. Amen'
+      'As it was in the beginning, is now and will be forever. \nAmen'
     ]};
     case 4:  return {Title: 'Oh My Jesus', text:[
-      'Oh my Jesus, forgive us our sins, save us from the fires of Hell and lead all',
-      'souls to Heaven, especially those in most need of thine mercy.'
+      'Oh my Jesus, forgive us our sins, save us from the fires of Hell and lead all souls',
+      'to Heaven, especially those in most need of thine mercy.'
     ]};
     case 5:  return {Title: 'Hail Holy Queen', text:[
-      'Hail Holy Queen, Mother of Mercy. Our life, our Sweetness and our Hope. To ',
-      'thee do we cry, poor banished children of Eve, To thee do we send up our ',
-      'sighs, mourning and weeping in this valley of tears. Turn then most gracious ',
-      'advocate, thine eyes of mercy towards us. And after this our exile, show unto us, the ',
-      'blessed fruit of thy womb, Jesus. ',
-      'Oh Clemen, oh Loving, oh Sweet Virgin Mary. ',
-      'Pray for us, oh most holy Mother of God. That we may be made worthy, of the ',
-      'promises of christ. Amen'
+      'Hail Holy Queen, Mother of Mercy. Our life, our Sweetness and our Hope. To thee',
+      'do we cry, poor banished children of Eve, To thee do we send up our sighs,',
+      'mourning and weeping in this valley of tears. Turn then most gracious advocate, ',
+      'thine eyes of mercy towards us. And after this our exile, show unto us,',
+      'the blessed fruit of thy womb, Jesus. ',
+      'Oh Clement, \noh Loving, \noh Sweet Virgin Mary. ',
+      'Pray for us, oh most holy Mother of God. ',
+      'That we may be made worthy, of the promises of Christ. \nAmen'
     ]};
     case 6:  return {Title: 'Oh Precious Blood and Water...', text:[
       'Oh precious blood and water, which gushed forth from the heart of jesus as a',
@@ -110,12 +110,24 @@ var readings = function(){
     menu.show();
   };
   
-  var _readings = '';
-  var _lastDate = '';
-  var _menuExists = '';
+  this.readings = '';
+  this.lastDate = '';
+  this.menuExists = '';
+  this.window = '';
+  this.text = '';
+  this.pos = '';
+  this.Vector2 = '';
   this.readingsReadMenu = function(date){
-    date = (date == 'last' ? _lastDate : date);
-    _lastDate = date;
+    
+    if(_this.window !== ''){
+      _this.window.hide();
+      _this.window = '';
+    }
+    
+    _this.Vector2 = require('vector2');
+    
+    date = (date == 'last' ? _this.lastDate : date);
+    _this.lastDate = date;
     
     console.log('http://universalis.com/Europe.England.Westminster/'+date+'/jsonpmass.js');
     _this.ajax(
@@ -123,31 +135,47 @@ var readings = function(){
         url: 'http://universalis.com/Europe.England.Westminster/'+date+'/jsonpmass.js'
       },
       function(data, status, request) {
+        
+        //parse our json data
         data = JSON.parse(data.substring(data.length - 3, 20));
-        
-        var items = [];
-        items.push({title: 'Reading 1', subtitle: data.Mass_R1.source, data: data.Mass_R1});
-        items.push({title: 'Psalm', subtitle: data.Mass_Ps.source, data: data.Mass_Ps});
-        for(var i = 2; i < 10; i++){
-          if(data['Mass_R'+i] !== undefined)
-            items.push({title: 'Reading '+i, subtitle: data['Mass_R'+i].source, data: data['Mass_R'+i]});
-          if(data['Mass_Ps'+i] !== undefined)
-            items.push({title: 'Psalm '+i, subtitle: data['Mass_Ps'+i].source, data: data['Mass_Ps'+i]}); 
-        }
-        items.push({title: 'Gospel', subtitle: data.Mass_G.source, data: data.Mass_G});
-        data.copyright.source = 'Universalis';
-        items.push({title: 'Copyright', subtitle: 'for the readings', data: data.copyright});
-  
-        _readings = items;
-        
+        _this.readings = _this.universalisCallback(data);
         
         var menu = new UI.Menu();
-        menu.items(0,items);
-        menu.on('select', function(e){_this.displayReading(0,e);});
+        menu.items(0,_this.readings);
+        menu.on('select', function(e){
+          _this.window = new UI.Window({fullscreen: true});
+          _this.text = new UI.Text({
+            position: new _this.Vector2(13, 4),
+            size: new _this.Vector2(130, 160),
+            textAlign: 'center',
+            textOverflow: 'wrap',
+            color: 'black',
+            backgroundColor: 'white',
+            text: '',
+          });
+          _this.window.add(_this.text);
+          
+          _this.pos = new UI.Circle({
+            position: new _this.Vector2(6, 10),
+            radius: 4
+          });
+          _this.window.add(_this.pos);
+          
+          _this.curChunk = 0; 
+          _this.readingNum = e.itemIndex;
+          _this.displayReading(0, 0);
+          
+          _this.window.on('click','select',function(){_this.displayReading( 0,  1);});
+          _this.window.on('click','back',  function(){_this.displayReading( 0, -1);});
+          _this.window.on('click','up',    function(){_this.displayReading(-1,  0);});
+          _this.window.on('click','down',  function(){_this.displayReading( 1,  0);});
+          
+          _this.window.show();
+        });
         
-        if(_menuExists !== '')
-          _menuExists.hide();
-        _menuExists = menu;
+        if(_this.menuExists !== '')
+          _this.menuExists.hide();
+        _this.menuExists = menu;
         
         menu.show();
       },
@@ -168,59 +196,102 @@ var readings = function(){
     });
   };
   
-  this.displayReading = function(curChunk, e){
-    if(_readings[e.itemIndex] === undefined)
-      return _this.readingsReadMenu('last');
-    
-    var body = _readings[e.itemIndex].data.text;
-    body = (body === undefined ? '[No text to be displayed, Sorry]' : body);
-    body = body.split('</div>').join('\n\n');
-    body = body.replace(/<\/?[^>]+(>|$)/g, "");
-    body = _this.decodeHtmlEntity(body);
-    body = _readings[e.itemIndex].data.source+':\n\n'+body+'  ';
-  
-    var ChunkSize = 900;
-    var numChunks = Math.ceil(body.length/ChunkSize);
-    var chunks = [];
-    
-    chunks.push(body.substring(0, body.lastIndexOf(" ", ChunkSize)));
-    for(var i = 1; i < numChunks; i++){
-      chunks[i - 1] += '\n[press select to continue]';
-      var chunkText = body.substring(body.lastIndexOf(" ", (ChunkSize * i)), body.lastIndexOf(" ", (ChunkSize * (i + 1))));
-      chunks.push('[page '+(i+1)+']\n\n'+chunkText);
+  this.universalisCallback = function(readings){
+    var pages = [];
+    for(var r in readings){
+      
+      var page = {};
+      
+      if(!readings.hasOwnProperty(r) || (r.indexOf('Mass_') < 0 && r.indexOf('opyright') < 0)) continue;
+
+      if(r.indexOf('Mass_R') >= 0)
+        page.title = 'Reading';
+      else if(r.indexOf('Mass_Ps') >= 0)
+        page.title = 'Psalm';
+      else if(r.indexOf('Mass_G') >= 0)
+        page.title = 'Gospel';
+      else if(r.indexOf('opyright') >= 0)
+        page.title = 'Copyright';
+
+      page.subtitle = readings[r].source;
+      var sub = (readings[r].source !== undefined ? '<div>' + readings[r].source.replace(',',', ') + '</div>' : '');
+
+      var text = '<div>'+page.title+'</div>' + sub + readings[r].text;
+      text = text.replace(/ style="[^"]+"/gi,"");
+      text = _this.decodeHtmlEntity(text);
+      var regexp = /<div>.*?<\/div>/g;
+      var match;
+
+      var charLimit = 16;
+      var chunkTemp = [];
+      var chunks = [];
+
+      while ((match = regexp.exec(text)) !== null){
+        var line = '';
+        match = match[0].substring(5,match[0].length-6).replace(/\s\s/g,'');
+        match = match.replace(/<i>/,"R: ");
+        match = match.replace(/<.*?>/gi,"");
+        var explode = match.split(' ');
+        for(var i = 0; i < explode.length; i++){
+          if((line + ' ' + explode[i]).length > charLimit){
+            chunkTemp.push(line.trim());
+            line = '';
+          }
+          line += ' ' + explode[i];
+        }
+
+        if(match.trim() === 'or'){
+          chunkTemp.pop();
+          chunkTemp.push(line);
+        }
+        else{
+          chunkTemp.push(line);
+          chunkTemp.push('');
+        }
+      }
+
+      for(var j = 0; j < chunkTemp.length; j += 6){
+        var len = chunks.push(chunkTemp[j]);
+        for(var k = j + 1; k < j + 6; k++){
+          if(chunkTemp[k] === undefined)
+            break;
+          chunks[len - 1] += "\n" + chunkTemp[k];
+        }
+      }
+
+      page.text = chunks;
+      pages.push(page);
     }
+    return pages;
+  };
+  
+  this.curChunk = 0;
+  this.readingNum = 0;
+  this.displayReading = function(chunkInc, itemInc){
+    _this.readingNum += itemInc;
+    _this.curChunk += chunkInc;
     
-    if(curChunk < 0)
-      curChunk = numChunks - 1;
+    if(itemInc !== 0)
+      _this.curChunk = 0;
     
-    console.log(chunks[curChunk].length);
-    var card = new UI.Card({
-      title: (_readings[e.itemIndex].title),
-      body: (chunks[curChunk]),
-      scrollable: true
-    });
+    if(_this.readings[_this.readingNum] === undefined)
+      return _this.window.hide();
+      
+ 
+    if(_this.readings[_this.readingNum].text[_this.curChunk]  === undefined)
+      _this.curChunk =  _this.curChunk > 0 ? _this.readings[_this.readingNum].text.length - 1 : 0;
     
-    card.on('click','select',function(){
-      card.hide();
-      if(curChunk < numChunks - 1)
-        _this.displayReading(curChunk + 1, {itemIndex: e.itemIndex});
-      else
-        _this.displayReading(0, {itemIndex: e.itemIndex + 1});
-    });
+    _this.title = _this.readings[_this.readingNum].title;
+    _this.text.text(_this.readings[_this.readingNum].text[_this.curChunk]);
     
-    card.on('click','back',function(){
-      card.hide();
-      if(curChunk > 0)
-        _this.displayReading(curChunk - 1, {itemIndex: e.itemIndex});
-      else
-        _this.displayReading(-1, {itemIndex: e.itemIndex - 1});
-    });
-    
-    card.show();
+    var pos = _this.pos.position();
+    var l = _this.readings[_this.readingNum].text.length;
+    pos.y = 10 + ((132/(l-1)) * (l - (l - 1 - _this.curChunk)));
+    _this.pos.animate('position',pos,400);
   };
 };
 
-var rosary = function(type, start){
+var rosary = function(type){
   var _this = this;
   
   this.Vibe = require('ui/vibe');
@@ -230,70 +301,98 @@ var rosary = function(type, start){
   this.type = type;
   
   this.beads = [
-    null,null,null,null,
-    0,1,2,3,4,
-    5,11,11,11,11,11,11,11,11,11,11,
-    6,11,11,11,11,11,11,11,11,11,11,
-    7,11,11,11,11,11,11,11,11,11,11,
-    8,11,11,11,11,11,11,11,11,11,11,
-    9,11,11,11,11,11,11,11,11,11,11,
-    10,
-    null,null,null,null
+    {screen: 1, beads: [null,0,1,2,3,4,5]},
+    {screen: 0, beads: [5,11,11,11,11,11,11,11,11,11,11,6]},
+    {screen: 0, beads: [6,11,11,11,11,11,11,11,11,11,11,7]},
+    {screen: 0, beads: [7,11,11,11,11,11,11,11,11,11,11,8]},
+    {screen: 0, beads: [8,11,11,11,11,11,11,11,11,11,11,9]},
+    {screen: 0, beads: [9,11,11,11,11,11,11,11,11,11,11,10]},
+    {screen: 1, beads: [10,null]}
   ];
   
-  this.getBead = function(y, pushBead){
-    if(_this.beads[pushBead] === null)
-      return [];
-    else if([0,-1].indexOf(_this.beads[pushBead]) != -1)
-      return _this.crossElement(y, _this.beads[pushBead]);
-    else if([2,3,4,11].indexOf(_this.beads[pushBead]) != -1)
-      return _this.beadElement(y, 8);
-    else if([1,5,6,7,8,9,10].indexOf(_this.beads[pushBead]) != -1)
-      return _this.beadElement(y, 13);
-    else
-      return [];
-  };
+  this.beadSet = [[],[]];
+  //decade beadset
+  this.beadSet[0].push(new UI.Circle({
+    position: new _this.Vector2(15, (13 * 12) + 2),
+    radius: 7
+  }));
+  for (var i = 11; i >= 2; i--)
+    this.beadSet[0].push(new UI.Circle({
+      position: new _this.Vector2(15, (13 * i) + 0),
+      radius: 5
+    }));
+  this.beadSet[0].push(new UI.Circle({
+    position: new _this.Vector2(15, (13 * 1) - 2),
+    radius: 7
+  }));
 
-  this.beadElement = function(y, radius){
-    var cir = new UI.Circle({
-        position: new _this.Vector2(20, 83 + y),
-        radius: radius
-      });
-    cir.yoffset = 0;
-    
-    return [cir];
-  };
+  //cross beadset
+  this.beadSet[1].push(new UI.Rect({
+    position: new _this.Vector2(15 - 2, (13 * 6) + 1),
+    size: new _this.Vector2(4, 24)
+  }));
+  this.beadSet[1].push(new UI.Rect({
+    position: new _this.Vector2(15 - 8, (13 * 6) + 8),
+    size: new _this.Vector2(16, 4)
+  }));
+  this.beadSet[1].push(new UI.Circle({
+    position: new _this.Vector2(15, (13 * 5) + 2),
+    radius: 7
+  }));
+  for (i = 4; i >= 2; i--)
+    this.beadSet[1].push(new UI.Circle({
+      position: new _this.Vector2(15, (13 * i) + 0),
+      radius: 5
+    }));
+  this.beadSet[1].push(new UI.Circle({
+    position: new _this.Vector2(15, (13 * 1) - 2),
+    radius: 7
+  }));
   
-  this.crossElement = function(y){ 
-    var rects = [
-      new UI.Rect({
-        position: new _this.Vector2(20 - 3, 84 - 23 + y),
-        size: new _this.Vector2(8, 44)
-      }),
-      new UI.Rect({
-        position: new _this.Vector2(20 - 15, 84 - 10 + y),
-        size: new _this.Vector2(30, 8)
-      })
-    ];
-    rects[0].yoffset = 23;
-    rects[1].yoffset = 10;
-    return rects;
+  this.switchBeads = function(num){
+    var notNum = num == 1 ? 0 : 1;
+    //take off what shouldn't be there
+    for(i = 0; i < _this.beadSet[notNum].length; i++)
+      _this.window.remove(_this.beadSet[notNum][i]);
+    
+    //add what should
+    for(i = 0; i < _this.beadSet[num].length; i++)
+      _this.window.add(_this.beadSet[num][i]);
   };
+  this.switchBeads(1);
   
   this.lastTime = new Date().getTime();
   this.pray = function(inc){
-    var i = 0;//to get cloud pebble to stop warning me :|
-    
+  
     var temptime = new Date().getTime();
     if(temptime - this.lastTime < 500)
       return;
     this.lastTime = temptime;
     
-    if(_this.beads[_this.bead + inc] === null || _this.beads[_this.bead + inc] === -1)
-      return;
-    _this.bead += inc;
+    var pos = {};
+    if(_this.bead[1] + inc < 0 && _this.bead[0] > 0){
+      console.log('moving down');
+      _this.bead[0]--;
+      _this.bead[1] = _this.beads[_this.bead[0]].beads.length - 2;
+      _this.switchBeads(_this.beads[_this.bead[0]].screen);
+    }
+    else if(_this.bead[1] + inc > _this.beads[_this.bead[0]].beads.length - 2 && _this.bead[0] < 6){
+      console.log('moving up');
+      _this.bead[0]++;
+      _this.bead[1] = 0;
+      _this.switchBeads(_this.beads[_this.bead[0]].screen);
+    }
+    else if(_this.bead[1] + inc >= 0 && _this.bead[1] + inc <= _this.beads[_this.bead[0]].beads.length - 2 && _this.beads[_this.bead[0]].beads[_this.bead[1] + inc] !== null){
+      console.log('just moving');
+      _this.bead[1] += inc;
+    }
+    console.log(_this.bead[0], _this.bead[1]);
+  
+    pos = _this.pointer.position();
+    pos.y = _this.beadSet[_this.beads[_this.bead[0]].screen][_this.bead[1]].position().y;
+    _this.pointer.animate('position',pos,400);
     
-    var t = _this.type.text[_this.beads[_this.bead]];
+    var t = _this.type.text[_this.beads[_this.bead[0]].beads[_this.bead[1]]];
     _this.curPrayer = [];
     if([100,101,102,103,104].indexOf(t) != -1)
       _this.curPrayer = getPrayer(t, _this.type.mysteries[t - 100]);
@@ -303,34 +402,11 @@ var rosary = function(type, start){
     _this.curChunk = 0;
     _this.moveText(0);
     
-    if([5,6,7,8,9].indexOf(_this.beads[_this.bead]) != -1)
+    console.log(_this.beads[_this.bead[0]].beads[_this.bead[1]]);
+    if([5,6,7,8,9].indexOf(_this.beads[_this.bead[0]].beads[_this.bead[1]]) != -1)
       _this.Vibe.vibrate('short');
-    else if(_this.beads[_this.bead] == 10)
+    else if(_this.beads[_this.bead[0]].beads[_this.bead[1]] == 10)
       _this.Vibe.vibrate('long');
-  
-    var newBead = _this.getBead(inc * -150, _this.bead + (4 * inc));
-    for(i = 0; i < newBead.length; i++)
-      _this.window.add(newBead[i]);
-    
-    var removeBead = [];
-    if(inc == 1){
-      removeBead = _this.elements.shift();
-      _this.elements.push(newBead);
-    }
-    else{
-      removeBead = _this.elements.pop();
-      _this.elements.unshift(newBead);
-    }
-    for(i = 0; i < removeBead.length; i++)
-      _this.window.remove(removeBead[i]);
-    
-    for(i = 0; i < _this.elements.length; i++){
-      for(var j = 0; j < _this.elements[i].length; j++){
-        var pos = _this.elements[i][j].position();
-        pos.y =  84 + ((3 - i) * 50) - _this.elements[i][j].yoffset;
-        _this.elements[i][j].animate('position', pos, 400);
-      }
-    }
   };
   
   this.moveText = function(upDown){
@@ -338,46 +414,55 @@ var rosary = function(type, start){
       _this.curChunk += upDown;
     
     _this.text.text(_this.curPrayer.text[_this.curChunk]);
+    
+    if(_this.curPrayer.text.length === 1)
+      _this.cont.text(' \n\n\n>\n\n\n ');
+    else if(_this.curChunk == _this.curPrayer.text.length - 1)
+      _this.cont.text('•\n\n\n>\n\n\n ');
+    else if(_this.curChunk === 0)
+      _this.cont.text(' \n\n\n>\n\n\n•');
+    else
+      _this.cont.text('•\n\n\n>\n\n\n•');
+    
+      
   };
   
-  this.elements = [
-    _this.getBead( 150, start - 3),
-    _this.getBead( 100, start - 2),
-    _this.getBead(  50, start - 1),
-    _this.getBead(   0, start),
-    _this.getBead( -50, start + 1),
-    _this.getBead(-100, start + 2),
-    _this.getBead(-150, start + 3)
-  ];
-  
-  for(var i = 0; i < this.elements.length; i++)
-    for(var j = 0; j < this.elements[i].length; j++)
-      this.window.add(this.elements[i][j]);
-  
-  this.bead = start;
+  this.bead = [0,1];
 
   this.text = new UI.Text({
-    position: new _this.Vector2(40, 4),
-    size: new _this.Vector2(100, 160),
+    position: new _this.Vector2(30, 4),
+    size: new _this.Vector2(106, 160),
     textAlign: 'center',
     textOverflow: 'wrap',
     color: 'black',
     backgroundColor: 'white',
     text: '',
   });
-  
   this.curPrayer = getPrayer(_this.type.text[0]);
   this.curChunk = 0;
-  this.moveText(0);
-  
   this.window.add(_this.text);
   
-  this.window.add(new UI.Circle({
-    position: new _this.Vector2(39, 84),
+  this.cont = new UI.Text({
+    position: new _this.Vector2(144 - 7, 14),
+    size: new _this.Vector2(8, 144),
+    textAlign: 'center',
+    color: 'white',
+    backgroundColor: 'clear',
+    font: 'gothic-18-bold', 
+    text: '',
+  });
+  this.window.add(_this.cont);
+  
+  //needs to be after to set the cont correctly
+  this.moveText(0);
+  
+  this.pointer = new UI.Circle({
+    position: new _this.Vector2(29, this.beadSet[1][1].position().y),
     radius: 4,
     borderColor : 'black'
-  }));
-
+  });
+  this.window.add(this.pointer);
+  
   this.window.on('click','select',function(){_this.pray(1);});
   this.window.on('longClick','select',function(){_this.pray(-1);});
   this.window.on('click','up',function(){_this.moveText(-1);});
@@ -413,7 +498,7 @@ function mainMenu(){
   
   menu.on('select',function(e){
     if(e.itemIndex === 0){
-      var r = new readings().readingsGetDateMenu();
+      new readings().readingsGetDateMenu();
     }
     else{
       rosaryMenu();
